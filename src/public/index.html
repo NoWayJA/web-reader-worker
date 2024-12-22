@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Reader Worker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        #logs {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .log-entry {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Web Reader Worker</h1>
+    <div id="logs"></div>
+
+    <script>
+        const ws = new WebSocket(`ws://${window.location.host}`);
+        const logsDiv = document.getElementById('logs');
+
+        ws.onmessage = (event) => {
+            const log = JSON.parse(event.data);
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <div class="timestamp">${log.timestamp}</div>
+                <div>Uptime: ${log.uptime}</div>
+                <div>Memory Usage: ${log.memory.toFixed(2)} MB</div>
+                <div>CPU User: ${log.cpu.user} System: ${log.cpu.system}</div>
+            `;
+
+            logsDiv.insertBefore(logEntry, logsDiv.firstChild);
+            
+            // Keep only the last 10 entries
+            if (logsDiv.children.length > 10) {
+                logsDiv.removeChild(logsDiv.lastChild);
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+    </script>
+</body>
+</html> 
