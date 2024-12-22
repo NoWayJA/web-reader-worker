@@ -11,7 +11,7 @@ const server = createServer(app);
 const wss = new WebSocket.Server({ server });
 const logGenerator = new LogGenerator();
 
-// Broadcast function to send message to all clients
+// Broadcast function to send message to all connected WebSocket clients
 function broadcast(message: string) {
     wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
@@ -28,10 +28,10 @@ app.get('/', (_req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Control flag for WebSocket loop
+// Control flag for main processing loop
 var runLoop = true;
 
-// Handle new WebSocket connections
+// Handle new WebSocket connections and disconnections
 wss.on('connection', async (ws) => {
     const log = logGenerator.generateLog("New client joined system-message group");
     broadcast(JSON.stringify(log));
@@ -42,19 +42,18 @@ wss.on('connection', async (ws) => {
     });
 });
 
-// Start server
+// Start server and begin processing queue
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     startQueueCheck();
 }); 
 
-// Separate async function to handle queue checking
+// Main processing loop: check queue and broadcast updates
 async function startQueueCheck() {
     while (runLoop) {
         try {
             await checkQueue(broadcast);
-
         } catch (error) {
             const errorLog = logGenerator.generateLog(`Error: ${error}`);
             broadcast(JSON.stringify(errorLog));
