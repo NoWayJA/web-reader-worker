@@ -44,6 +44,7 @@
                 <div>Uptime: ${log.uptime}</div>
                 <div>Memory Usage: ${log.memory.toFixed(2)} MB</div>
                 <div>CPU User: ${log.cpu.user} System: ${log.cpu.system}</div>
+                <div>Message: ${log.message}</div>
             `;
 
             logsDiv.insertBefore(logEntry, logsDiv.firstChild);

@@ -5,22 +5,26 @@ export class LogGenerator {
         this.startTime = new Date();
     }
 
-    generateLog(): LogEntry {
+    // Generate log entry with system stats and custom message
+    generateLog(message: string): LogEntry {
         const currentTime = new Date();
         const uptime = Math.floor((currentTime.getTime() - this.startTime.getTime()) / 1000);
         
         return {
             timestamp: currentTime.toISOString(),
             uptime: `${uptime} seconds`,
-            memory: process.memoryUsage().heapUsed / 1024 / 1024,
-            cpu: process.cpuUsage()
+            memory: process.memoryUsage().heapUsed / 1024 / 1024, // Memory in MB
+            cpu: process.cpuUsage(),
+            message: message
         };
     }
 }
 
+// Log entry structure
 export interface LogEntry {
     timestamp: string;
     uptime: string;
     memory: number;
     cpu: NodeJS.CpuUsage;
+    message: string;
 } 
