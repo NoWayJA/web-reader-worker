@@ -2,7 +2,6 @@ import express from 'express';
 import { createServer } from 'http';
 import WebSocket from 'ws';
 import path from 'path';
-import { LogGenerator } from './logGenerator';
 import { checkQueue } from './reader';
 
 // Initialize Express and WebSocket server
@@ -23,16 +22,10 @@ var runLoop = true;
 
 // Handle new WebSocket connections
 wss.on('connection', async (ws) => {
-    console.log('Client connected');
-    
-    const logGenerator = new LogGenerator();
-    
     // Main loop: check queue and send updates every second
     do {
-       const data = await checkQueue();
-       const log = logGenerator.generateLog(data);
-       ws.send(JSON.stringify(log));
-       await new Promise(resolve => setTimeout(resolve, 1000));
+        await checkQueue(ws);
+        await new Promise(resolve => setTimeout(resolve, 1000));
     } while (runLoop);
 
     // Cleanup on connection close
