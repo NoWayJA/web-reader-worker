@@ -25,6 +25,15 @@
             color: #666;
             font-size: 0.9em;
         }
+        .message {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
@@ -44,7 +53,7 @@
                 <div>Uptime: ${log.uptime}</div>
                 <div>Memory Usage: ${log.memory.toFixed(2)} MB</div>
                 <div>CPU User: ${log.cpu.user} System: ${log.cpu.system}</div>
-                <div>Message: ${log.message}</div>
+                <div class="message">Message: ${log.message}</div>
             `;
 
             logsDiv.insertBefore(logEntry, logsDiv.firstChild);
