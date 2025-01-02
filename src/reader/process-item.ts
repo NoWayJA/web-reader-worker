@@ -1,7 +1,9 @@
 import { LogGenerator } from '../logGenerator';
 import { chromium } from 'playwright-core';
+import TurndownService from 'turndown';
 
 const logGenerator = new LogGenerator();
+const turndownService = new TurndownService();
 
 // Process a queue item and update its status in the core API
 export const processItem = async (data: any, broadcast: (message: string) => void) => {
@@ -32,10 +34,11 @@ export const processItem = async (data: any, broadcast: (message: string) => voi
 
         // Fetch and process webpage content
         const html = await fetchUrl(url);
-        log = logGenerator.generateLog(`Fetched HTML content length: ${html.length}`);
+        const markdown = turndownService.turndown(html);
+        log = logGenerator.generateLog(`Converted HTML to Markdown, length: ${markdown.length}`);
         broadcast(JSON.stringify(log));
 
-        // Send POST request to core API to update item status
+        // Send POST request to core API to update item status with markdown
         response = await fetch(`http://${process.env.CORE_HOST}:${process.env.CORE_PORT}${process.env.CORE_API_PATH}`, {
             method: 'POST',
             headers: {
@@ -44,7 +47,8 @@ export const processItem = async (data: any, broadcast: (message: string) => voi
             },
             body: JSON.stringify({
                 queueId: data.id,
-                status: "COMPLETED"
+                status: "COMPLETED",
+                markdown: markdown
             })
         });
 
@@ -69,15 +73,49 @@ const fetchUrl = async (url: string): Promise<string> => {
         const context = await browser.newContext();
         const page = await context.newPage();
 
-        // Navigate and wait for network idle
-        await page.goto(url, { waitUntil: 'networkidle' });
+        // Navigate to URL with longer timeout
+        await page.goto(url, { timeout: 60000 });
+        
+        // Wait for full page load
+        await Promise.all([
+            page.waitForLoadState('load'),
+            page.waitForLoadState('domcontentloaded'),
+            page.waitForLoadState('networkidle'),
+        ]);
 
-        // Get the full HTML content
-        const html = await page.content();
+        // Scroll through the page to trigger lazy loading
+        await page.evaluate(async () => {
+            await new Promise<void>((resolve) => {
+                let totalHeight = 0;
+                const distance = 100;
+                const timer = setInterval(() => {
+                    const scrollHeight = document.body.scrollHeight;
+                    window.scrollBy(0, distance);
+                    totalHeight += distance;
+
+                    if(totalHeight >= scrollHeight){
+                        clearInterval(timer);
+                        resolve();
+                    }
+                }, 100);
+            });
+        });
+
+        // Wait for dynamic content
+        await page.waitForTimeout(4000);
+        
+        // Get the fully rendered HTML after all modifications
+        const html = await page.evaluate(() => {
+            // Remove any script tags to prevent execution
+            const scripts = document.getElementsByTagName('script');
+            while(scripts.length > 0) {
+                scripts[0].parentNode?.removeChild(scripts[0]);
+            }
+            return document.documentElement.outerHTML;
+        });
 
         return html;
     } finally {
-        // Always close the browser
         await browser.close();
     }
 }
