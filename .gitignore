@@ -52,3 +52,6 @@ temp/
 
 # Yarn Integrity file
 .yarn-integrity 
+
+# tmp folder
+tmp/
