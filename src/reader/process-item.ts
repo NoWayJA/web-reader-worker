@@ -1,9 +1,14 @@
 import { LogGenerator } from '../logGenerator';
 import { chromium } from 'playwright-core';
 import TurndownService from 'turndown';
+import { readFileSync } from 'fs';
+import path from 'path';
 
 const logGenerator = new LogGenerator();
 const turndownService = new TurndownService();
+
+// Read the inject script at startup
+const injectScript = readFileSync(path.join(__dirname, '../injector/dist/inject-single.js'), 'utf-8');
 
 // Process a queue item and update its status in the core API
 export const processItem = async (data: any, broadcast: (message: string) => void) => {
@@ -73,17 +78,18 @@ const fetchUrl = async (url: string): Promise<string> => {
         const context = await browser.newContext();
         const page = await context.newPage();
 
-        // Navigate to URL with longer timeout
         await page.goto(url, { timeout: 60000 });
         
-        // Wait for full page load
         await Promise.all([
             page.waitForLoadState('load'),
             page.waitForLoadState('domcontentloaded'),
             page.waitForLoadState('networkidle'),
         ]);
 
-        // Scroll through the page to trigger lazy loading
+        // Inject and execute the script to get the page title
+        const pageTitle = await page.evaluate(injectScript);
+        console.log('Page Title:', pageTitle);
+
         await page.evaluate(async () => {
             await new Promise<void>((resolve) => {
                 let totalHeight = 0;
@@ -101,12 +107,9 @@ const fetchUrl = async (url: string): Promise<string> => {
             });
         });
 
-        // Wait for dynamic content
         await page.waitForTimeout(4000);
         
-        // Get the fully rendered HTML after all modifications
         const html = await page.evaluate(() => {
-            // Remove any script tags to prevent execution
             const scripts = document.getElementsByTagName('script');
             while(scripts.length > 0) {
                 scripts[0].parentNode?.removeChild(scripts[0]);

@@ -7,7 +7,8 @@
     "start": "nodemon src/server.ts",
     "build": "tsc",
     "serve": "node dist/server.js",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "rollup": "rollup -c"
   },
   "dependencies": {
     "@types/turndown": "^5.0.5",
@@ -18,11 +19,14 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^12.1.2",
     "@types/express": "^4.17.17",
     "@types/node": "^20.5.0",
     "@types/ws": "^8.5.5",
     "nodemon": "^3.0.1",
+    "rollup": "^4.29.1",
     "ts-node": "^10.9.1",
+    "tslib": "^2.8.1",
     "typescript": "^5.1.6"
   },
   "engines": {

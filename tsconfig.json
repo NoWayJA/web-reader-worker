@@ -11,6 +11,7 @@
     "rootDir": "./src",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "allowJs": true,
     "sourceMap": true,
     "declaration": true,
     "noUnusedLocals": true,
@@ -19,6 +20,9 @@
     "noFallthroughCasesInSwitch": true,
     "typeRoots": ["./node_modules/@types"]
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "src/injector/dist/**/*"
+  ],
   "exclude": ["node_modules", "dist"]
 } 
