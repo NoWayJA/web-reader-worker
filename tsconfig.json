@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDirs": ["./src"],
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowJs": true,
@@ -23,6 +23,9 @@
   "include": [
     "src/**/*",
     "src/injector/dist/**/*"
+  ],
+  "copy": [
+    { "from": "src/public", "to": "dist/public" }
   ],
   "exclude": ["node_modules", "dist"]
 } 

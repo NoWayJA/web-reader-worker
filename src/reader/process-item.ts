@@ -78,7 +78,7 @@ const fetchUrl = async (url: string): Promise<string> => {
         const context = await browser.newContext();
         const page = await context.newPage();
 
-        await page.goto(url, { timeout: 60000 });
+        await page.goto(url, { timeout: 10000 });
         
         await Promise.all([
             page.waitForLoadState('load'),
@@ -87,8 +87,8 @@ const fetchUrl = async (url: string): Promise<string> => {
         ]);
 
         // Inject and execute the script to get the page title
-        const pageTitle = await page.evaluate(injectScript);
-        console.log('Page Title:', pageTitle);
+        const domExtractions = await page.evaluate(injectScript);
+        console.log('Dom Extractions:', domExtractions);
 
         await page.evaluate(async () => {
             await new Promise<void>((resolve) => {
