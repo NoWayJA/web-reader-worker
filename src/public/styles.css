@@ -1,0 +1,186 @@
+:root {
+    --bg-color: #e9eaec;
+    --box-shadow: 8px 8px 15px #a3b1c6, -8px -8px 15px #ffffff;
+    --box-shadow-inset: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
+    --text-color: #4a5568;
+    --title-color: #2d3748;
+    --accent-color: #4299e1;
+    --error-shadow: 8px 8px 15px #c6a3a3, -8px -8px 15px #ffffff;
+    --logs-shadow: 8px 8px 15px #a3c6a3, -8px -8px 15px #ffffff;
+    --result-shadow: 8px 8px 15px #a3b1c6, -8px -8px 15px #ffffff;
+    --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Ubuntu, Arial, sans-serif;
+    --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+    --title-gradient-start: #2d3748;
+    --title-gradient-end: #4299e1;
+    --glass-bg: rgba(255, 255, 255, 0.25);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    font-family: var(--font-primary);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+    margin: 5px auto 15px;
+    padding: 15px 30px;
+    font-size: 2.4em;
+    max-width: 500px;
+    font-family: var(--font-primary);
+    font-weight: 700;
+    color: var(--title-color);
+    text-align: center;
+    
+    /* Sunken effect */
+    background: var(--bg-color);
+    border-radius: 15px;
+    box-shadow: var(--box-shadow-inset);
+    
+    /* Add depth with multiple inset shadows */
+    box-shadow: 
+        inset 3px 3px 5px rgba(163, 177, 198, 0.7),
+        inset -3px -3px 5px rgba(255, 255, 255, 0.7),
+        inset 8px 8px 15px rgba(163, 177, 198, 0.4),
+        inset -8px -8px 15px rgba(255, 255, 255, 0.4);
+    
+    /* Remove previous effects */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+}
+
+/* Remove previous effects */
+h1::before, h1::after {
+    display: none;
+}
+
+/* Keep the hover effect but make it more subtle */
+h1:hover {
+    transform: translateY(-1px);
+    transition: transform 0.3s ease;
+}
+
+#results-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+    padding: 10px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.result, #logs, #error {
+    background-color: var(--bg-color);
+    padding: 12px;
+    border-radius: 15px;
+    min-height: 120px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.result {
+    box-shadow: var(--box-shadow);
+}
+
+.result:hover {
+    transform: translateY(-2px);
+}
+
+#logs {
+    box-shadow: var(--logs-shadow);
+}
+
+#error {
+    box-shadow: var(--error-shadow);
+}
+
+.log-entry {
+    margin-bottom: 8px;
+    padding: 8px;
+    border-radius: 10px;
+    background: var(--bg-color);
+    box-shadow: var(--box-shadow-inset);
+}
+
+.timestamp {
+    color: var(--accent-color);
+    font-size: 0.8em;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-mono);
+}
+
+.timestamp::before {
+    content: '●';
+    margin-right: 8px;
+    color: var(--accent-color);
+}
+
+.message {
+    font-size: 0.9em;
+    line-height: 1.4;
+    color: var(--text-color);
+    max-height: 150px;
+    overflow: auto;
+    padding-right: 8px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+/* Custom scrollbar */
+.message::-webkit-scrollbar {
+    width: 6px;
+}
+
+.message::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.message::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+    border-radius: 3px;
+}
+
+/* System stats styling */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 6px;
+    margin: 6px 0;
+    font-size: 0.75em;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.stat-item {
+    padding: 4px;
+    border-radius: 8px;
+    background: var(--bg-color);
+    box-shadow: var(--box-shadow-inset);
+    text-align: center;
+    font-family: var(--font-mono);
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+    
+    #results-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .result, #logs, #error {
+        min-height: 100px;
+    }
+}

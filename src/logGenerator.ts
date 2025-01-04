@@ -11,6 +11,7 @@ export class LogGenerator {
         const uptime = Math.floor((currentTime.getTime() - this.startTime.getTime()) / 1000);
         
         return {
+            title: "log",
             timestamp: currentTime.toISOString(),
             uptime: `${uptime} seconds`,
             memory: process.memoryUsage().heapUsed / 1024 / 1024, // Memory in MB
@@ -22,6 +23,7 @@ export class LogGenerator {
 
 // Log entry structure
 export interface LogEntry {
+    title: string;
     timestamp: string;
     uptime: string;
     memory: number;

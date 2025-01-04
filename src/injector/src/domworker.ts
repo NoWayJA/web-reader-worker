@@ -11,7 +11,7 @@ export function FindTitle(): string {
     return possibilities.find(title => title?.trim()) || 'Untitled Page';
 }
 
-export function FindArticle(): string {
+export function FindMainText(): string {
     // Common article selectors to try first
     const commonSelectors = [
         'article',
