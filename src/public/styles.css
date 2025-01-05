@@ -2,8 +2,8 @@
     --bg-color: #e9eaec;
     --box-shadow: 8px 8px 15px #a3b1c6, -8px -8px 15px #ffffff;
     --box-shadow-inset: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
-    --text-color: #4a5568;
-    --title-color: #2d3748;
+    --text-color: #151951;
+    --title-color: #444e61;
     --accent-color: #4299e1;
     --error-shadow: 8px 8px 15px #c6a3a3, -8px -8px 15px #ffffff;
     --logs-shadow: 8px 8px 15px #a3c6a3, -8px -8px 15px #ffffff;
@@ -51,8 +51,8 @@ h1 {
         inset -8px -8px 15px rgba(255, 255, 255, 0.4);
     
     /* Remove previous effects */
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     border: none;
 }
 
@@ -76,7 +76,7 @@ h1:hover {
     margin: 0 auto;
 }
 
-.result, #logs, #error {
+.result, #logs, #error, #socket {
     background-color: var(--bg-color);
     padding: 12px;
     border-radius: 15px;
@@ -100,6 +100,11 @@ h1:hover {
 
 #error {
     box-shadow: var(--error-shadow);
+}
+
+#socket {
+    box-shadow: var(--result-shadow);
+    min-height: 80px;
 }
 
 .log-entry {

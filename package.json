@@ -13,10 +13,14 @@
     "rollup": "rollup -c"
   },
   "dependencies": {
+    "@langchain/core": "^0.3.27",
+    "@langchain/ollama": "^0.1.4",
+    "@langchain/openai": "^0.3.16",
     "@mozilla/readability": "^0.5.0",
     "@types/turndown": "^5.0.5",
     "dotenv": "^16.4.7",
     "express": "^4.18.2",
+    "langchain": "^0.3.9",
     "playwright-core": "^1.49.1",
     "socket.io": "^4.8.1",
     "turndown": "^7.2.0",

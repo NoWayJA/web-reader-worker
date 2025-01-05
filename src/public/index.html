@@ -11,6 +11,7 @@
 
 <body>
     <h1>Web Reader Worker</h1>
+    <div id="socket"></div>
     <div id="results-container">
         <div id="logs"></div>
         <div id="error"></div>
@@ -34,11 +35,13 @@
             divs[`result${i}`] = resultDiv;
         }
 
+        const socketDiv = document.getElementById('socket');
+
         function createLogEntry(data, includeStats = false) {
             const logEntry = document.createElement('div');
             logEntry.className = 'log-entry';
 
-            let html = `<div class="timestamp">${data.title} ${data.timestamp}</div>`;
+            let html = `<div class="timestamp">${data.title} ${data.timestamp || new Date().toISOString()}</div>`;
 
             if (includeStats) {
                 html += `
@@ -62,12 +65,25 @@
             divs[divId].innerHTML = logEntry.innerHTML;
         }
 
+        function updateSocket(text) {
+            console.log("updateSocket", text);
+            const textNode = document.createTextNode(text);
+            socketDiv.appendChild(textNode);
+            socketDiv.scrollTop = socketDiv.scrollHeight;
+        }
+
+        function clearSocket() {
+            socketDiv.innerHTML = '';
+        }
+
         // Event listeners
         socket.on('log', data => updateDiv('logs', data, true));
         for (let i = 0; i < NUM_RESULTS; i++) {
             socket.on(`result${i}`, data => updateDiv(`result${i}`, data));
         }
         socket.on('error', data => updateDiv('error', data));
+        socket.on('socket', data => updateSocket(data));
+        socket.on('clearSocket', () => clearSocket());
     </script>
 </body>
 
