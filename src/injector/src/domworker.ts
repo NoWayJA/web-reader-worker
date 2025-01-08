@@ -106,8 +106,8 @@ export function FindMainText(): string {
 
         // Skip elements with certain classes/ids
         const badClasses = ['nav', 'menu', 'sidebar', 'footer', 'header', 'comment'];
-        const className = element.className.toLowerCase();
-        const id = element.id.toLowerCase();
+        const className = (element.className || '').toString().toLowerCase();
+        const id = (element.id || '').toLowerCase();
         return !badClasses.some(bad => className.includes(bad) || id.includes(bad));
     }
 

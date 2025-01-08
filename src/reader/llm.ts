@@ -1,4 +1,5 @@
-import { schemaPreamble, schema, extractPreamble } from "./prompts";
+import { schemaPreamble, schema, extractPreamble, 
+    schemaListPreamble, listSchema, extractListPreamble } from "./prompts";
 import { ChatOpenAI } from "@langchain/openai";
 import { Ollama } from "@langchain/ollama";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
@@ -46,7 +47,12 @@ const selectModel = (modelName: string) => {
 
 
 const extract = async (field: any, pageData: any, io: Server) => {
-    const prompt = `${field.prompt} ${schemaPreamble} ${schema(field.name)} ${extractPreamble}`;
+    const prompt = `
+    ${field.prompt} 
+    ${schemaPreamble} 
+    ${schema(field.name)} 
+    ${extractPreamble}
+    `;
     const langchainModel = selectModel(defaultAIEngine);
     const messages = [
         new SystemMessage(prompt),
@@ -69,4 +75,34 @@ const extract = async (field: any, pageData: any, io: Server) => {
         return retval;
 }
 
-export { extract };
+
+const extractList = async (data: any, pageData: any, io: Server) => {
+    const prompt = `
+    ${data.url.configuration.listPrompt} 
+    ${schemaListPreamble} 
+    ${listSchema(data.url.configuration.name)} 
+    ${extractListPreamble}
+    `;
+    const langchainModel = selectModel(defaultAIEngine);
+    const messages = [
+        new SystemMessage(prompt),
+        new HumanMessage(JSON.stringify(pageData.readabilityHtml)),
+    ];
+
+    const stream = await langchainModel.stream(messages);
+    let retval = "";
+    let alertval = "";
+    io.to('system-message').emit("clearSocket");
+    for await (let chunk of stream) {
+        let text: string = defaultAIEngine.startsWith("llama") ? chunk : chunk.text;
+        retval += text.replace(/\n/g, "<br>");
+        alertval += text;
+        retval = retval.replace(/<(?!\/?(br|strong)\b)[^>]*>/gi, "");
+        io.to('system-message').emit("socket", text);
+        process.stdout.write(text);
+    }
+    console.log("alertval", alertval);
+    return retval;
+}
+
+export { extract, extractList };

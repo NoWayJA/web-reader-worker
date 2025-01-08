@@ -1,3 +1,4 @@
+// @ts-ignore
 import { Readability } from "@mozilla/readability";
 
 const ActiveHtml = () => {
