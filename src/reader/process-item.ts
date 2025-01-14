@@ -54,7 +54,10 @@ export const processItem = async (data: any, io: Server) => {
 // Fetch webpage content using Playwright
 const fetchUrl = async (url: string): Promise<any> => {
     const browser = await chromium.launch({
-        executablePath: process.env.CHROME_EXECUTABLE_PATH
+        executablePath: process.env.CHROME_EXECUTABLE_PATH,
+        args: ['--disable-blink-features=AutomationControlled',
+            '--headless=new',
+        ]
     });
 
     try {
@@ -164,4 +167,22 @@ const processList = async (data: any, url: string, responseData: any, io: Server
 
     const listData = await extractList(data, { title, mainText, html, reducedHtml, readabilityHtml }, io);
     io.to('system-message').emit('result9', { title: "listData", message: listData });
+
+            // Send POST request to core API to update item status
+            var response = await fetch(`http://${process.env.CORE_HOST}:${process.env.CORE_PORT}${process.env.CORE_API_PATH}/list`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${process.env.CORE_API_KEY}`,
+                    'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            queueId: data.id,
+            status: "COMPLETED",
+            fieldData: listData
+        })
+    });
+
+    responseData = await response.json();
+    const log = logGenerator.generateLog(JSON.stringify(responseData));
+    io.to('system-message').emit('log', log);
 }
