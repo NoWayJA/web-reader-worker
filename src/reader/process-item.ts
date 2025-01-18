@@ -100,6 +100,7 @@ const fetchUrl = async (url: string): Promise<any> => {
 }
 
 const processPage = async (data: any, url: string, responseData: any, io: Server) => {
+    io.to('system-message').emit('clear-result-boxes');
     io.to('system-message').emit('result0', { title: "processing content Page", message: responseData.url.url, timestamp: new Date().toISOString() });
 
     // Fetch and process webpage content
@@ -145,6 +146,7 @@ const processPage = async (data: any, url: string, responseData: any, io: Server
 
 // @ts-ignore
 const processList = async (data: any, url: string, responseData: any, io: Server) => {
+    io.to('system-message').emit('clear-result-boxes');
     io.to('system-message').emit('result0', { title: "processing list Page", message: data.url.url, timestamp: new Date().toISOString() });
     // Fetch and process webpage content
     const { title, mainText, html, reducedHtml, readabilityHtml } = await fetchUrl(url);
@@ -186,3 +188,4 @@ const processList = async (data: any, url: string, responseData: any, io: Server
     const log = logGenerator.generateLog(JSON.stringify(responseData));
     io.to('system-message').emit('log', log);
 }
+

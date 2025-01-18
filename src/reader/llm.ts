@@ -102,7 +102,7 @@ const extractList = async (data: any, pageData: any, io: Server) => {
         process.stdout.write(text);
     }
     console.log("alertval", alertval);
-    return retval;
+    return alertval;
 }
 
 export { extract, extractList };

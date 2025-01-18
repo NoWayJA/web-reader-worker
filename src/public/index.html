@@ -76,11 +76,18 @@
             socketDiv.innerHTML = '';
         }
 
+        function clearResultBoxes() {
+            for (let i = 0; i < NUM_RESULTS; i++) {
+                divs[`result${i}`].innerHTML = '';
+            }
+        }
+
         // Event listeners
         socket.on('log', data => updateDiv('logs', data, true));
         for (let i = 0; i < NUM_RESULTS; i++) {
             socket.on(`result${i}`, data => updateDiv(`result${i}`, data));
         }
+        socket.on('clear-result-boxes', () => clearResultBoxes());
         socket.on('error', data => updateDiv('error', data));
         socket.on('socket', data => updateSocket(data));
         socket.on('clearSocket', () => clearSocket());
