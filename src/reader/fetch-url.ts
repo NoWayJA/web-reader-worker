@@ -47,11 +47,12 @@ const fetchUrl = async (url: string): Promise<any> => {
     }
 }
 
+type LinkData = {
+    url: string;
+    text: string;
+};
 
-const fetchUrlList = async (url: string, listExpression: string): Promise<any> => {
-    // fetch a list of urls from the page using the listExpression with playwright / chromium
-    // return an array of urls
-
+const fetchUrlList = async (url: string, listExpression: string): Promise<LinkData[]> => {
     const browser = await chromium.launch({
         executablePath: process.env.CHROME_EXECUTABLE_PATH,
         args: ['--disable-blink-features=AutomationControlled',
@@ -82,17 +83,17 @@ const fetchUrlList = async (url: string, listExpression: string): Promise<any> =
             });
         });
 
-        // fetch all the urls from the dom
-        const urls = await page.evaluate(() => {
+        const links: LinkData[] = await page.evaluate(() => {
             const elements = document.querySelectorAll('a');
-            return Array.from(elements).map(el => el.href);
+            return Array.from(elements).map(el => ({
+                url: el.href,
+                text: el.textContent?.trim() || ''
+            }));
         });
 
-        // filter the urls with the listExpression
-        const filteredUrls = urls.filter(url => url.match(listExpression));
+        const filteredLinks = links.filter(link => link.url.match(listExpression));
 
-        return filteredUrls;
-
+        return filteredLinks;
     } finally {
         await browser.close();
     }

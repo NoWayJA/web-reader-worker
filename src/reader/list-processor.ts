@@ -18,11 +18,11 @@ const processList = async (data: any, url: string, responseData: any, io: Server
     if (data.url.listExpression && isValidRegex(data.url.listExpression)) {
         //show listexpression in result box 2
         io.to('system-message').emit('result2', { title: "listExpression", message: data.url.listExpression });
-        const listOfUrls = await fetchUrlList(url, data.url.listExpression);
-        const listOfUrlsString = listOfUrls.map((url: string) => url + '<br/>').join('');
+        const listOfLinks = await fetchUrlList(url, data.url.listExpression);    
+        const listOfUrlsString = listOfLinks.map((link: { url: string, text: string }) => link.url + '<br/>').join('');    
         io.to('system-message').emit('result1', { title: "listOfUrls", message: listOfUrlsString });
         returnData = {
-            "listOfUrls": listOfUrls,
+            "listOfLinks": listOfLinks,
             "queueId": data.id,
             "type": type,
             "status": "COMPLETED",
