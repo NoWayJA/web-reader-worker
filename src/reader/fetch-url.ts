@@ -1,4 +1,4 @@
-import { chromium } from 'playwright-core';
+import { chromium, Page } from 'playwright-core';
 import { readFileSync } from 'fs';
 import path from 'path';
 
@@ -14,19 +14,12 @@ const fetchUrl = async (url: string): Promise<any> => {
             '--headless=new',
         ]
     });
-
     try {
         const context = await browser.newContext();
         const page = await context.newPage();
-
-        await Promise.all([
-            page.waitForLoadState('load'),
-            page.waitForLoadState('domcontentloaded'),
-            page.waitForLoadState('networkidle'),
-        ]);
-
+        // First navigate to the URL
         await page.goto(url, { timeout: 5000 });
-
+        await waitForPageLoad(page);
         await page.waitForTimeout(1000);
         await page.evaluate(async () => {
             await new Promise<void>((resolve) => {
@@ -54,4 +47,69 @@ const fetchUrl = async (url: string): Promise<any> => {
     }
 }
 
-export { fetchUrl };
+
+const fetchUrlList = async (url: string, listExpression: string): Promise<any> => {
+    // fetch a list of urls from the page using the listExpression with playwright / chromium
+    // return an array of urls
+
+    const browser = await chromium.launch({
+        executablePath: process.env.CHROME_EXECUTABLE_PATH,
+        args: ['--disable-blink-features=AutomationControlled',
+            '--headless=new',
+        ]
+    });
+
+    try {
+        const context = await browser.newContext();
+        const page = await context.newPage();
+        await page.goto(url, { timeout: 5000 });
+        await waitForPageLoad(page);
+        await page.waitForTimeout(1000);
+        await page.evaluate(async () => {
+            await new Promise<void>((resolve) => {
+                let totalHeight = 0;
+                const distance = 200;
+                const timer = setInterval(() => {
+                    const scrollHeight = document.body.scrollHeight;
+                    window.scrollBy(0, distance);
+                    totalHeight += distance;
+
+                    if (totalHeight >= scrollHeight) {
+                        clearInterval(timer);
+                        resolve();
+                    }
+                }, 50);
+            });
+        });
+
+        // fetch all the urls from the dom
+        const urls = await page.evaluate(() => {
+            const elements = document.querySelectorAll('a');
+            return Array.from(elements).map(el => el.href);
+        });
+
+        // filter the urls with the listExpression
+        const filteredUrls = urls.filter(url => url.match(listExpression));
+
+        return filteredUrls;
+
+    } finally {
+        await browser.close();
+    }
+}
+
+const waitForPageLoad = async (page: Page) => {
+    try {
+        await Promise.all([
+            page.waitForLoadState('load', { timeout: 20000 }),
+            page.waitForLoadState('domcontentloaded', { timeout: 20000 }),
+            page.waitForLoadState('networkidle', { timeout: 20000 }),
+        ]);
+        await page.waitForTimeout(1000);
+    } catch (error: any) {
+        console.warn('Page load states timed out in waitForPageLoad:', error.message);
+        // Continue execution even if load states timeout
+    }
+}
+
+export { fetchUrl, fetchUrlList };

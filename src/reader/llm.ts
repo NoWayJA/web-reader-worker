@@ -1,5 +1,7 @@
-import { schemaPreamble, schema, extractPreamble, 
-    schemaListPreamble, listSchema, extractListPreamble } from "./prompts";
+import {
+    schemaPreamble, schema, extractPreamble,
+    schemaListPreamble, listSchema, extractListPreamble
+} from "./prompts";
 import { ChatOpenAI } from "@langchain/openai";
 import { Ollama } from "@langchain/ollama";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
@@ -71,10 +73,8 @@ const extract = async (field: any, pageData: any, io: Server) => {
         io.to('system-message').emit("socket", text);
         process.stdout.write(text);
     }
-    console.log("alertval", alertval);
-        return retval;
+    return retval;
 }
-
 
 const extractList = async (data: any, pageData: any, io: Server) => {
     const prompt = `
@@ -101,7 +101,6 @@ const extractList = async (data: any, pageData: any, io: Server) => {
         io.to('system-message').emit("socket", text);
         process.stdout.write(text);
     }
-    console.log("alertval", alertval);
     return alertval;
 }
 
