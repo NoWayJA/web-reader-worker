@@ -2,7 +2,7 @@
 
 A high-performance, scalable web content extraction service built with modern TypeScript and Node.js. This service intelligently processes web pages, extracts meaningful content, and provides clean, structured data through an AI processing pipeline.
 
-## 🔧 Architecture
+## 🏗 Architecture
 
 ```mermaid
 graph TD
