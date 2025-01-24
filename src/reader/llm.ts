@@ -10,6 +10,7 @@ import { Server } from 'socket.io';
 const openaiKey = process.env.OPENAI_API_KEY;
 const defaultAIEngine = "gpt-4o-mini";
 
+// Select appropriate AI model based on configuration
 const selectModel = (modelName: string) => {
     let langchainModel: any = null;
     switch (modelName) {
@@ -47,7 +48,7 @@ const selectModel = (modelName: string) => {
     return langchainModel;
 }
 
-
+// Extract specific fields from webpage content using AI
 const extract = async (field: any, pageData: any, io: Server) => {
     const prompt = `
     ${field.prompt} 
@@ -76,6 +77,7 @@ const extract = async (field: any, pageData: any, io: Server) => {
     return retval;
 }
 
+// Extract list information from webpage content using AI
 const extractList = async (data: any, pageData: any, io: Server) => {
     const prompt = `
     ${data.url.configuration.listPrompt} 

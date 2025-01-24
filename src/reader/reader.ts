@@ -9,6 +9,7 @@ const coreHost = process.env.CORE_HOST;
 const corePort = process.env.CORE_PORT;
 const coreApiKey = process.env.CORE_API_KEY;
 const coreApiPath = process.env.CORE_API_PATH;
+const workerGroup = process.env.WORKER_GROUP;
 const logGenerator = new LogGenerator();
 
 // Fetch and process items from the queue, broadcasting status updates
@@ -21,7 +22,8 @@ const checkQueue = async (io: Server): Promise<string | null> => {
         // Fetch queue data from core API
         const response = await fetch(`http://${coreHost}:${corePort}${coreApiPath}`, {
             headers: {
-                'Authorization': `Bearer ${coreApiKey}`
+                'Authorization': `Bearer ${coreApiKey}`,
+                'WorkerGroup': workerGroup || ''
             }
         });
 

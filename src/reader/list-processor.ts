@@ -12,9 +12,11 @@ const turndownService = new TurndownService();
 const processList = async (data: any, url: string, responseData: any, io: Server) => {
     io.to('system-message').emit('clear-result-boxes');
     io.to('system-message').emit('result0', { title: "processing list Page", message: data.url.url, timestamp: new Date().toISOString() });
-    // Fetch and process webpage content
+
     let returnData = null;
     let type = "list";
+
+    // If valid regex is provided, extract matching links from the page
     if (data.url.listExpression && isValidRegex(data.url.listExpression)) {
         //show listexpression in result box 2
         io.to('system-message').emit('result2', { title: "listExpression", message: data.url.listExpression });
@@ -29,6 +31,7 @@ const processList = async (data: any, url: string, responseData: any, io: Server
         };
     }
     else {
+        // Otherwise extract content using LLM processing
         const { title, mainText, html, reducedHtml, readabilityHtml } = await fetchUrl(url);
         const markdown = turndownService.turndown(html);
 
