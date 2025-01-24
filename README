@@ -73,11 +73,11 @@ npm run dev    # Runs in development mode with hot reload
 
 ```mermaid
 graph TD
-    A[Queue] --> B[Worker Node]
-    B --> C[Content Extraction]
-    C --> D[AI Processing]
-    D --> E[API Response]
-    B --> F[Real-time Updates]
+    A[Queue] --> B[Worker Node];
+    B --> C[Content Extraction];
+    C --> D[AI Processing];
+    D --> E[API Response];
+    B --> F[Real-time Updates];
 ```
 
 ## 📈 Performance
