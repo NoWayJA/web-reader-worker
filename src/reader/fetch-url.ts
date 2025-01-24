@@ -6,11 +6,11 @@ import path from 'path';
 const injectScript = readFileSync(path.join(__dirname, '../injector/dist/inject-single.js'), 'utf-8');
 
 
-// Fetch webpage content using Playwright
+// Fetch webpage content using Playwright with anti-bot detection disabled
 const fetchUrl = async (url: string): Promise<any> => {
     const browser = await chromium.launch({
         executablePath: process.env.CHROME_EXECUTABLE_PATH,
-        args: ['--disable-blink-features=AutomationControlled',
+        args: ['--disable-blink-features=AutomationControlled', // Disable automation detection
             '--headless=new',
         ]
     });
@@ -99,14 +99,16 @@ const fetchUrlList = async (url: string, listExpression: string): Promise<LinkDa
     }
 }
 
+// Helper function to ensure page is fully loaded before processing
 const waitForPageLoad = async (page: Page) => {
     try {
+        // Wait for multiple load states to ensure complete page load
         await Promise.all([
             page.waitForLoadState('load', { timeout: 20000 }),
             page.waitForLoadState('domcontentloaded', { timeout: 20000 }),
             page.waitForLoadState('networkidle', { timeout: 20000 }),
         ]);
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(1000); // Additional delay for stability
     } catch (error: any) {
         console.warn('Page load states timed out in waitForPageLoad:', error.message);
         // Continue execution even if load states timeout
