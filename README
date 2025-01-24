@@ -72,13 +72,12 @@ npm run dev    # Runs in development mode with hot reload
 ## 🔧 Architecture
 
 ```mermaid
-graph LR
-    A[Web Pages] --> B[Worker Node]
+graph TD
+    A[Queue] --> B[Worker Node]
     B --> C[Content Extraction]
     C --> D[AI Processing]
     D --> E[API Response]
     B --> F[Real-time Updates]
-    F --> G[UI Dashboard]
 ```
 
 ## 📈 Performance
